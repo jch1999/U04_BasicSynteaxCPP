@@ -18,9 +18,7 @@ protected:
 public:	
 	virtual void Tick(float DeltaTime) override;
 
-private:
-	UPROPERTY(EditAnywhere)
+protected:
+	UPROPERTY(VisibleDefaultsOnly, Category = "Components")
 	UStaticMeshComponent* MeshComp;
-
-	// Todo. Byte Padding
 };
