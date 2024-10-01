@@ -8,7 +8,8 @@ UCLASS()
 class BASICSYNTAXCPP_API ACStaticMeshActor_Sphere : public ACStaticMeshActorBase
 {
 	GENERATED_BODY()
-	
+
 public:
 	ACStaticMeshActor_Sphere();
+
 };

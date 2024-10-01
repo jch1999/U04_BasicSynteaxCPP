@@ -8,7 +8,7 @@ UCLASS()
 class BASICSYNTAXCPP_API ACStaticMeshActor_Cylinder : public ACStaticMeshActorBase
 {
 	GENERATED_BODY()
-
+	
 public:
 	ACStaticMeshActor_Cylinder();
 };
