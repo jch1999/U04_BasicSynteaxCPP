@@ -25,11 +25,24 @@ void AACLogTest::BeginPlay()
 	CLog::Print(GetActorLocation());
 	CLog::Print(GetActorRotation());
 
+	CLog::Log(20);
+	CLog::Log(PI);
+	CLog::Log("Log Test");
+	CLog::Log(GetActorLocation());
+	CLog::Log(GetActorRotation());
+	CLog::Log(this);
+	CLog::Log(__FILE__);
+	//CLog::Log(__FUNCTION__, __LINE__);
+	PrintLine();
+	CLog::Log(GetClass()->GetName());
 }
 
 // Called every frame
 void AACLogTest::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+
+	
+	CLog::Print(GetWorld()->TimeSeconds, 500,2.0f,FColor::Green);
 }
 
