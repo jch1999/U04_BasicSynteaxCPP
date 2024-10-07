@@ -16,7 +16,6 @@ void ACStaticMeshActorBase::BeginPlay()
 {
 	Super::BeginPlay();
 
-	// Todo. 동적 머티리얼 엣세 얻어오기 -> DynamicMaterial화
 	UObject* Asset = StaticLoadObject(UMaterialInstanceConstant::StaticClass(), nullptr, TEXT("/Game/StaticMeshs/MI_StaticMesh"));
 	UMaterialInstanceConstant* MaterialAsset = Cast<UMaterialInstanceConstant>(Asset);
 	if (MaterialAsset)
