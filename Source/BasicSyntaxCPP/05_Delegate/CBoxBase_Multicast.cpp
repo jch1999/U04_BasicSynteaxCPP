@@ -1,5 +1,5 @@
 #include "CBoxBase_Multicast.h"
-#include "Kismet/KusmetMathLibrary.h"
+#include "Kismet/KismetMathLibrary.h"
 
 void ACBoxBase_Multicast::BeginPlay()
 {
@@ -15,5 +15,5 @@ void ACBoxBase_Multicast::BeginOverlap(AActor* OverlappedActor, AActor* OtherAct
 	FLinearColor RandomColor = FLinearColor::MakeRandomColor();
 	RandomColor.A = 1.0f;
 
-	OnBoxMultiCast.Broadcast(RandomIndex,RandomColor);
+	OnBoxMulticast.Broadcast(RandomIndex,RandomColor);
 }

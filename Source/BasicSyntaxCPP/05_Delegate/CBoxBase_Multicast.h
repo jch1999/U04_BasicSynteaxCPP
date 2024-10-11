@@ -15,8 +15,9 @@ protected:
 	
 
 private:
+	UFUNCTION()
 	void BeginOverlap(AActor* OverlappedActor, AActor* OtherActor);
 
 public:
-	FBoxMultiCast OnBoxMultiCast;
+	FBoxMultiCast OnBoxMulticast;
 };
