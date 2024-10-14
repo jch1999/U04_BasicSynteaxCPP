@@ -8,7 +8,7 @@ void ACBoxBase_Event::BeginPlay()
 
 void ACBoxBase_Event::BeginOverlap(AActor* OverlappedActor, AActor* OtherActor)
 {
-	OnBoxEvent.Broadcast(KismetMathLibrary::RandomIntegerInRAnge(0, 2));
+	OnBoxEvent.Broadcast(UKismetMathLibrary::RandomIntegerInRange(0, 2));
 }
 
 
