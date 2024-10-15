@@ -42,6 +42,11 @@ void ACPlayer::BeginPlay()
 {
 	Super::BeginPlay();
 	
+	BodyMaterial = UMaterialInstanceDynamic::Create(GetMesh()->GetMaterial(0), nullptr);
+	LogoMaterial = UMaterialInstanceDynamic::Create(GetMesh()->GetMaterial(1), nullptr);
+
+	GetMesh()->SetMaterial(0, BodyMaterial);
+	GetMesh()->SetMaterial(1, LogoMaterial);
 }
 
 void ACPlayer::Tick(float DeltaTime)
@@ -88,5 +93,20 @@ void ACPlayer::OnSprint()
 void ACPlayer::OffSprint()
 {
 	GetCharacterMovement()->MaxWalkSpeed = 400.0f;
+}
+
+void ACPlayer::SetBodyColor(FLinearColor InBodyColor, FLinearColor InLogoColor)
+{
+	BodyMaterial->SetVectorParameterValue("BodyColor", InBodyColor);
+	LogoMaterial->SetVectorParameterValue("BodyColor", InLogoColor);
+}
+
+void ACPlayer::ResetBodyColor()
+{
+	SetBodyColor
+	(
+		FLinearColor(0.45098f, 0.403922f, 0.360784f),
+		FLinearColor(0.45098f, 0.403922f, 0.360784f)
+	);
 }
 

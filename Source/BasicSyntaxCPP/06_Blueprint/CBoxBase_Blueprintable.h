@@ -16,6 +16,9 @@ protected:
 	UFUNCTION(BlueprintImplementableEvent)
 	void ChangeBodyColor(FLinearColor InColor);
 
+	UFUNCTION(BlueprintNativeEvent)
+	void ResetBodyColor();
+
 private:
 	UFUNCTION()
 	void BeginOverlap(AActor* OverrappedActor, AActor* OtherActor);
