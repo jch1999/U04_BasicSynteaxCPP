@@ -37,6 +37,10 @@ public:
 	FLineTraceHit OnLineTraceHit;
 
 private:
+	UFUNCTION()
+	void LineTraceHit(AActor* InActor, FLinearColor InColor);
+
+private:
 	ACVertex* Vertices[2];
 
 };
