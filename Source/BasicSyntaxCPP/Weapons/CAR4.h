@@ -4,6 +4,9 @@
 #include "GameFramework/Actor.h"
 #include "CAR4.generated.h"
 
+class UAnimMontage;
+class ACharacter;
+
 UCLASS()
 class BASICSYNTAXCPP_API ACAR4 : public AActor
 {
@@ -23,9 +26,15 @@ public:
 
 public:
 	FORCEINLINE bool IsEquipped() { return bEquipped; }
-	FORCEINLINE bool IsPlayingMontage{ return bPlayingMontage; }
+	FORCEINLINE bool IsPlayingMontage() { return bPlayingMontage; }
 
-		// Todo. ½ÇÁ¦ ÃÑÀ» ²¨³»°í, ÃÑÀ» ½î°í
+	void Equip();
+	void Begin_Equip();
+	void End_Equip();
+	void Unequip();
+	void Begin_Unequip();
+	void End_Unequip();
+
 private:
 	UPROPERTY(VisibleDefaultsOnly, Category = "Components")
 	USkeletalMeshComponent* MeshComp;
@@ -38,8 +47,14 @@ private:
 	FName HandSocket;
 
 	UPROPERTY(VisibleDefaultsOnly, Category = "Montage")
+	UAnimMontage* EquipMontage;
+
+	UPROPERTY(VisibleDefaultsOnly, Category = "Montage")
+	UAnimMontage* UnequipMontage;
 
 private:
+	ACharacter* OwnerCharacter;
+
 	bool bEquipped;
 	bool bPlayingMontage;
 };

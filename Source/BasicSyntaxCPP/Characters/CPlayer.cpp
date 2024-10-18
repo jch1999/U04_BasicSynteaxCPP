@@ -96,7 +96,7 @@ void ACPlayer::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 
 void ACPlayer::OnMoveForward(float Axis)
 {
-	FRotator ControlRot = FRotator(0, 0, GetControlRotation().Yaw);
+	FRotator ControlRot = FRotator(0, GetControlRotation().Yaw, 0);
 	FVector Direction=FQuat(ControlRot).GetForwardVector();
 
 	AddMovementInput(Direction, Axis);
@@ -104,7 +104,7 @@ void ACPlayer::OnMoveForward(float Axis)
 
 void ACPlayer::OnMoveRight(float Axis)
 {
-	FRotator ControlRot = FRotator(0, 0, GetControlRotation().Yaw);
+	FRotator ControlRot = FRotator(0, GetControlRotation().Yaw, 0);
 	FVector Direction = FQuat(ControlRot).GetRightVector();
 
 	AddMovementInput(Direction, Axis);
@@ -122,7 +122,13 @@ void ACPlayer::OffSprint()
 
 void ACPlayer::OnRifle()
 {
+	if (AR4->IsEquipped())
+	{
+		AR4->Unequip();
+		return;
+	}
 
+	AR4->Equip();
 }
 
 void ACPlayer::SetBodyColor(FLinearColor InBodyColor, FLinearColor InLogoColor)

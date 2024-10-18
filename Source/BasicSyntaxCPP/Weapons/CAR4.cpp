@@ -12,6 +12,9 @@ ACAR4::ACAR4()
 	USkeletalMesh* MeshAsset;
 	CHelpers::GetAsset(&MeshAsset, "/Game/Weapons/Meshes/AR4/SK_AR4");
 	MeshComp->SetSkeletalMesh(MeshAsset);
+	
+	CHelpers::GetAsset(&EquipMontage, "/Game/Character/Animations/AR4/Rifle_Grab_Montage");
+	CHelpers::GetAsset(&UnequipMontage, "/Game/Character/Animations/AR4/Rifle_Ungrab_Montage");
 
 	HolsterSocket = "Holster_AR4";
 	HandSocket = "Hand_AR4";
@@ -34,7 +37,7 @@ void ACAR4::BeginPlay()
 {
 	Super::BeginPlay();
 
-	ACharacter* OwnerCharacter = Cast<ACharacter>(GetOwner());
+	OwnerCharacter = Cast<ACharacter>(GetOwner());
 	if (OwnerCharacter)
 	{
 		AttachToComponent
@@ -51,3 +54,36 @@ void ACAR4::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 }
 
+void ACAR4::Equip()
+{
+	if (bEquipped) return;
+	if (bPlayingMontage)return;
+
+	bPlayingMontage = true;
+	OwnerCharacter->PlayAnimMontage(EquipMontage);
+}
+
+void ACAR4::Begin_Equip()
+{
+	AttachToComponent
+	(
+		OwnerCharacter->GetMesh(),
+		FAttachmentTransformRules(EAttachmentRule::KeepRelative, true),
+		HandSocket
+	);
+	bEquipped = true;
+}
+
+void ACAR4::End_Equip()
+{
+	bPlayingMontage = false;
+}
+
+void ACAR4::Unequip()
+{
+	if (!bEquipped) return;
+	if (bPlayingMontage)return;
+
+	bPlayingMontage = true;
+	OwnerCharacter->PlayAnimMontage(UnequipMontage);
+}

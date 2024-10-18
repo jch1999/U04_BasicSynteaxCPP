@@ -2,6 +2,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
+#include "Weapons/CWeaponInterface.h"
 #include "CPlayer.generated.h"
 
 class USpringArmComponent;
@@ -10,7 +11,7 @@ class UMaterialInstanceDynamic;
 class ACAR4;
 
 UCLASS()
-class BASICSYNTAXCPP_API ACPlayer : public ACharacter
+class BASICSYNTAXCPP_API ACPlayer : public ACharacter,public ICWeaponInterface
 {
 	GENERATED_BODY()
 
@@ -24,6 +25,9 @@ public:
 	virtual void Tick(float DeltaTime) override;
 
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
+
+public:
+	FORCEINLINE ACAR4* GetWeapon() override { return AR4; }
 
 private:
 	void OnMoveForward(float Axis);
@@ -40,6 +44,7 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	void ResetBodyColor();
+
 private:
 	UPROPERTY(VisibleDefaultsOnly, Category = "Components")
 	USpringArmComponent* SpringArmComp;
