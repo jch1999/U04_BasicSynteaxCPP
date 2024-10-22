@@ -22,5 +22,11 @@ protected:
 	float Speed;
 
 	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = "Player")
+	float Direction;
+
+	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = "Weapon")
 	bool bEquipped;
+
+	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = "Weapon")
+	bool bAiming;
 };

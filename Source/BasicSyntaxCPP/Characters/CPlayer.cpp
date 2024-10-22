@@ -16,6 +16,7 @@ ACPlayer::ACPlayer()
 	SpringArmComp->SetRelativeLocation(FVector(0.0f, 0.0f, 60.0f));
 	SpringArmComp->TargetArmLength = 200.0f; // 기본 값은 250 정도?
 	SpringArmComp->bUsePawnControlRotation = true; // SpringArm이 있을 때 카메라의 Pitch  회전을 위해 켜두어야 함
+	SpringArmComp->SocketOffset = FVector(0, 60, 0);
 
 	CameraComp = CreateDefaultSubobject<UCameraComponent>("CameraComp");
 	CameraComp->SetupAttachment(SpringArmComp);
@@ -92,6 +93,9 @@ void ACPlayer::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 	PlayerInputComponent->BindAction("Sprint", IE_Released, this, &ACPlayer::OffSprint);
 
 	PlayerInputComponent->BindAction("Rifle", IE_Pressed, this, &ACPlayer::OnRifle);
+
+	PlayerInputComponent->BindAction("Aim", IE_Pressed, this, &ACPlayer::OnAim);
+	PlayerInputComponent->BindAction("Aim", IE_Released, this, &ACPlayer::OffAim);
 }
 
 void ACPlayer::OnMoveForward(float Axis)
@@ -124,11 +128,48 @@ void ACPlayer::OnRifle()
 {
 	if (AR4->IsEquipped())
 	{
+		if (AR4->IsAiming())
+		{
+			OffAim();
+		}
+
 		AR4->Unequip();
 		return;
 	}
 
 	AR4->Equip();
+}
+
+void ACPlayer::OnAim()
+{
+	if (!AR4->IsEquipped())return;
+	if (AR4->IsPlayingMontage())return;
+
+	bUseControllerRotationYaw = true;
+	GetCharacterMovement()->bOrientRotationToMovement = false;
+
+	SpringArmComp->TargetArmLength = 100.0f;
+	SpringArmComp->SocketOffset = FVector(0, 30, 10);
+
+	AR4->EnableAim();
+
+	ZoomIn();
+}
+
+void ACPlayer::OffAim()
+{
+	if (!AR4->IsEquipped())return;
+	if (AR4->IsPlayingMontage())return;
+
+	bUseControllerRotationYaw = false;
+	GetCharacterMovement()->bOrientRotationToMovement = true;
+
+	SpringArmComp->TargetArmLength = 200.0f;
+	SpringArmComp->SocketOffset = FVector(0, 60, 0);
+
+	AR4->DisableAim();
+
+	ZoomOut();
 }
 
 void ACPlayer::SetBodyColor(FLinearColor InBodyColor, FLinearColor InLogoColor)

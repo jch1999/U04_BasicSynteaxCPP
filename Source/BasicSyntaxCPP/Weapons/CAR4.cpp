@@ -18,6 +18,8 @@ ACAR4::ACAR4()
 
 	HolsterSocket = "Holster_AR4";
 	HandSocket = "Hand_AR4";
+
+	MontagePlayRate = 1.75f;
 }
 
 //ACAR4* ACAR4::Spawn(ACharacter* InOwner)
@@ -54,24 +56,29 @@ void ACAR4::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 }
 
+void ACAR4::EnableAim() { bAiming = true; }
+
+void ACAR4::DisableAim() { bAiming = false; }
+
 void ACAR4::Equip()
 {
 	if (bEquipped) return;
 	if (bPlayingMontage)return;
 
 	bPlayingMontage = true;
-	OwnerCharacter->PlayAnimMontage(EquipMontage);
+	OwnerCharacter->PlayAnimMontage(EquipMontage,MontagePlayRate);
 }
 
 void ACAR4::Begin_Equip()
 {
+	bEquipped = true;
+
 	AttachToComponent
 	(
 		OwnerCharacter->GetMesh(),
 		FAttachmentTransformRules(EAttachmentRule::KeepRelative, true),
 		HandSocket
 	);
-	bEquipped = true;
 }
 
 void ACAR4::End_Equip()
@@ -85,5 +92,22 @@ void ACAR4::Unequip()
 	if (bPlayingMontage)return;
 
 	bPlayingMontage = true;
-	OwnerCharacter->PlayAnimMontage(UnequipMontage);
+	OwnerCharacter->PlayAnimMontage(UnequipMontage,MontagePlayRate);
+}
+
+void ACAR4::Begin_Unequip()
+{
+	bEquipped = false;
+
+	AttachToComponent
+	(
+		OwnerCharacter->GetMesh(),
+		FAttachmentTransformRules(EAttachmentRule::KeepRelative, true),
+		HolsterSocket
+	);
+}
+
+void ACAR4::End_Unequip()
+{
+	bPlayingMontage = false;
 }

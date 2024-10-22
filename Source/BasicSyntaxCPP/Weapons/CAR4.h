@@ -27,6 +27,10 @@ public:
 public:
 	FORCEINLINE bool IsEquipped() { return bEquipped; }
 	FORCEINLINE bool IsPlayingMontage() { return bPlayingMontage; }
+	FORCEINLINE bool IsAiming() { return bAiming; }
+
+	void EnableAim();
+	void DisableAim();
 
 	void Equip();
 	void Begin_Equip();
@@ -52,9 +56,13 @@ private:
 	UPROPERTY(VisibleDefaultsOnly, Category = "Montage")
 	UAnimMontage* UnequipMontage;
 
+	UPROPERTY(VisibleDefaultsOnly, Category = "Montage")
+	float MontagePlayRate;
+
 private:
 	ACharacter* OwnerCharacter;
 
 	bool bEquipped;
 	bool bPlayingMontage;
+	bool bAiming;
 };
