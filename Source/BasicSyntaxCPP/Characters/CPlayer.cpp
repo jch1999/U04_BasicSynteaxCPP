@@ -4,7 +4,9 @@
 #include "Camera/CameraComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Components/StaticMeshComponent.h"
+#include "Blueprint/UserWidget.h"
 #include "Weapons/CAR4.h"
+#include "UI/CAimWidget.h"
 
 ACPlayer::ACPlayer()
 {
@@ -54,23 +56,33 @@ ACPlayer::ACPlayer()
 	GetCharacterMovement()->bOrientRotationToMovement = true;
 	GetCharacterMovement()->MaxWalkSpeed = 400.0f;
 
+	// Get Aim Widget Class Asset
+	CHelpers::GetClass(&AnimWidgetClass, "/Game/UI/WB_Aim");
 }
 
 void ACPlayer::BeginPlay()
 {
 	Super::BeginPlay();
 	
+	// Set Dynamic Material
 	BodyMaterial = UMaterialInstanceDynamic::Create(GetMesh()->GetMaterial(0), nullptr);
 	LogoMaterial = UMaterialInstanceDynamic::Create(GetMesh()->GetMaterial(1), nullptr);
 
 	GetMesh()->SetMaterial(0, BodyMaterial);
 	GetMesh()->SetMaterial(1, LogoMaterial);
 
+	// Spawn AR4
+	
 	//ACAR4::Spawn(this);
 
 	FActorSpawnParameters SpawnParam;
 	SpawnParam.Owner = this;
 	AR4=GetWorld()->SpawnActor<ACAR4>(WeaponClass, SpawnParam);
+
+	// Create Aim Widget
+	AimWidget = CreateWidget<UCAimWidget>(GetController<APlayerController>(), AnimWidgetClass);
+	AimWidget->AddToViewport();
+	AimWidget->SetVisibility(ESlateVisibility::Hidden);
 }
 
 void ACPlayer::Tick(float DeltaTime)
@@ -154,6 +166,8 @@ void ACPlayer::OnAim()
 	AR4->EnableAim();
 
 	ZoomIn();
+
+	AimWidget->SetVisibility(ESlateVisibility::HitTestInvisible);
 }
 
 void ACPlayer::OffAim()
@@ -185,5 +199,16 @@ void ACPlayer::ResetBodyColor()
 		FLinearColor(0.45098f, 0.403922f, 0.360784f),
 		FLinearColor(0.45098f, 0.403922f, 0.360784f)
 	);
+}
+
+void ACPlayer::GetAimRay(FVector& OutAimStart, FVector& OutAimEnd, FVector& OutAimDirection)
+{
+	OutAimDirection = CameraComp->GetForwardVector();
+
+	FVector MuzzleSocketLocation = AR4->GetMesh()->GetSocketLocation("MuzzleFlash");
+
+	// Get CameraComponent's World Location
+	OutAimStart = CameraComp->GetComponentToWorld().GetLocation();
+	OutAimEnd = OutAimStart + OutAimDirection * AR4->GetShootRange();
 }
 

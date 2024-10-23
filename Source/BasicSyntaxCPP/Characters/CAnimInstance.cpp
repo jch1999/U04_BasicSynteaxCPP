@@ -16,6 +16,10 @@ void UCAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
 		TryGetPawnOwner()->GetControlRotation()
 	);
 
+	// Pitch = TryGetPawnOwner()->GetControlRotation().Pitch;
+	// 위와 같은 내용
+	Pitch = TryGetPawnOwner()->GetBaseAimRotation().Pitch;
+
 	ICWeaponInterface* Owner = Cast<ICWeaponInterface>(TryGetPawnOwner());
 	if (Owner && Owner->GetWeapon())
 	{

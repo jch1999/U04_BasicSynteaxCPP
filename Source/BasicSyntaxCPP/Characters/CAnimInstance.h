@@ -24,6 +24,9 @@ protected:
 	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = "Player")
 	float Direction;
 
+	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = "Player")
+	float Pitch;
+
 	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = "Weapon")
 	bool bEquipped;
 

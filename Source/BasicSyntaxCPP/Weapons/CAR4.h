@@ -28,6 +28,8 @@ public:
 	FORCEINLINE bool IsEquipped() { return bEquipped; }
 	FORCEINLINE bool IsPlayingMontage() { return bPlayingMontage; }
 	FORCEINLINE bool IsAiming() { return bAiming; }
+	FORCEINLINE USkeletalMeshComponent* GetMesh() { return MeshComp; }
+	FORCEINLINE float GetShootRange() { return ShootRange; }
 
 	void EnableAim();
 	void DisableAim();
@@ -58,6 +60,9 @@ private:
 
 	UPROPERTY(VisibleDefaultsOnly, Category = "Montage")
 	float MontagePlayRate;
+
+	UPROPERTY(VisibleDefaultsOnly, Category = "Range")
+	float ShootRange;
 
 private:
 	ACharacter* OwnerCharacter;
