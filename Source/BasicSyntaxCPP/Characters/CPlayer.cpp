@@ -106,8 +106,22 @@ void ACPlayer::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 
 	PlayerInputComponent->BindAction("Rifle", IE_Pressed, this, &ACPlayer::OnRifle);
 
+	PlayerInputComponent->BindAction("Action", IE_Pressed, this, &ACPlayer::OnFire);
+	PlayerInputComponent->BindAction("Action", IE_Released, this, &ACPlayer::OffFire);
+
 	PlayerInputComponent->BindAction("Aim", IE_Pressed, this, &ACPlayer::OnAim);
 	PlayerInputComponent->BindAction("Aim", IE_Released, this, &ACPlayer::OffAim);
+}
+
+void ACPlayer::AddLaunch(float Height)
+{
+	FVector Current = GetActorLocation();
+
+	TeleportTo
+	(
+		Current + FVector(0, 0, Height),
+		GetActorRotation()
+	);
 }
 
 void ACPlayer::OnMoveForward(float Axis)
@@ -150,6 +164,16 @@ void ACPlayer::OnRifle()
 	}
 
 	AR4->Equip();
+}
+
+void ACPlayer::OnFire()
+{
+	AR4->OnFire();
+}
+
+void ACPlayer::OffFire()
+{
+	AR4->OffFire();
 }
 
 void ACPlayer::OnAim()
@@ -203,12 +227,32 @@ void ACPlayer::ResetBodyColor()
 
 void ACPlayer::GetAimRay(FVector& OutAimStart, FVector& OutAimEnd, FVector& OutAimDirection)
 {
+	// Todo. 내적을 이용해보자,  총구 위치 - 카메라 위치
+
+	// Get Direction
 	OutAimDirection = CameraComp->GetForwardVector();
 
-	FVector MuzzleSocketLocation = AR4->GetMesh()->GetSocketLocation("MuzzleFlash");
-
+	FVector MuzzleLoc = AR4->GetMesh()->GetSocketLocation("MuzzleFlash");
 	// Get CameraComponent's World Location
-	OutAimStart = CameraComp->GetComponentToWorld().GetLocation();
-	OutAimEnd = OutAimStart + OutAimDirection * AR4->GetShootRange();
+	FVector CamLoc= CameraComp->GetComponentToWorld().GetLocation();
+	
+	// Get start
+	float Projected = (MuzzleLoc - CamLoc) | OutAimDirection;
+	OutAimStart = CamLoc + OutAimDirection * Projected;
+	
+	// Get End
+	FVector RandomConeDegree = UKismetMathLibrary::RandomUnitVectorInConeInDegrees(OutAimDirection, 0.2f);
+	RandomConeDegree *= AR4->GetShootRange();
+	OutAimEnd = OutAimStart + RandomConeDegree;
+}
+
+void ACPlayer::OnTarget()
+{
+	AimWidget->OnTarget();
+}
+
+void ACPlayer::OffTarget()
+{
+	AimWidget->OffTarget();
 }
 

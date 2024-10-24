@@ -41,6 +41,14 @@ public:
 	void Begin_Unequip();
 	void End_Unequip();
 
+	void OnFire();
+	void OffFire();
+
+private:
+	// OnFire()안에서만 사용, 타이머에 등록(DynamicDelegate라 UFUNCTION 필요)해 일정시간 마다 발사
+	UFUNCTION()
+	void Firing_Internal();
+
 private:
 	UPROPERTY(VisibleDefaultsOnly, Category = "Components")
 	USkeletalMeshComponent* MeshComp;
@@ -70,4 +78,5 @@ private:
 	bool bEquipped;
 	bool bPlayingMontage;
 	bool bAiming;
+	bool bFiring;
 };
