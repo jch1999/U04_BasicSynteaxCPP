@@ -200,7 +200,7 @@ void ACAR4::Firing_Internal()
 		if (HitComp->IsSimulatingPhysics())
 		{
 			// 힘 = 방향(플레이어 - 충돌 액터) * 크기
-			Direction = Hit.GetActor()->GetActorLocation() - OwnerCharacter->GetActorLocation();
+			//Direction = Hit.GetActor()->GetActorLocation() - OwnerCharacter->GetActorLocation();
 			Direction.Normalize();
 			HitComp->AddImpulseAtLocation(Direction * 3000.0f, OwnerCharacter->GetActorLocation());
 		}
