@@ -89,7 +89,7 @@ void ACAR4::Tick(float DeltaTime)
 		QueryParams
 	))
 	{
-		// �ùķ���Ʈ �������� ��츸 
+		// 시뮬레이트 피직스인 경우만 
 		if (Hit.GetComponent()->IsSimulatingPhysics())
 		{
 			OwnerInterface->OnTarget();
@@ -196,11 +196,13 @@ void ACAR4::Firing_Internal()
 	))
 	{
 		// Add Impulse to PhysicsBody
-		CLog::Log("HAHA");
-		CLog::Log("HAHA");
-		CLog::Log("HAHA");
-		CLog::Log("HAHA");
-		CLog::Log("HAHA");
-		CLog::Log("HAHA");
+		UPrimitiveComponent* HitComp = Hit.GetComponent();
+		if (HitComp->IsSimulatingPhysics())
+		{
+			// 힘 = 방향(플레이어 - 충돌 액터) * 크기
+			Direction = Hit.GetActor()->GetActorLocation() - OwnerCharacter->GetActorLocation();
+			Direction.Normalize();
+			HitComp->AddImpulseAtLocation(Direction * 3000.0f, OwnerCharacter->GetActorLocation());
+		}
 	}
 }
