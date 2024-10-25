@@ -89,7 +89,7 @@ void ACAR4::Tick(float DeltaTime)
 		QueryParams
 	))
 	{
-		// ½Ã¹Ä·¹ÀÌÆ® ÇÇÁ÷½ºÀÎ °æ¿ì¸¸ 
+		// ì‹œë®¬ë ˆì´íŠ¸ í”¼ì§ìŠ¤ì¸ ê²½ìš°ë§Œ 
 		if (Hit.GetComponent()->IsSimulatingPhysics())
 		{
 			OwnerInterface->OnTarget();
@@ -199,8 +199,8 @@ void ACAR4::Firing_Internal()
 		UPrimitiveComponent* HitComp = Hit.GetComponent();
 		if (HitComp->IsSimulatingPhysics())
 		{
-			// Èû = ¹æÇâ(ÇÃ·¹ÀÌ¾î - Ãæµ¹ ¾×ÅÍ) * Å©±â
-			//Direction = Hit.GetActor()->GetActorLocation() - OwnerCharacter->GetActorLocation();
+			// íž˜ = ë°©í–¥(í”Œë ˆì´ì–´ - ì¶©ëŒ ì•¡í„°) * í¬ê¸°
+			Direction = Hit.GetActor()->GetActorLocation() - OwnerCharacter->GetActorLocation();
 			Direction.Normalize();
 			HitComp->AddImpulseAtLocation(Direction * 3000.0f, OwnerCharacter->GetActorLocation());
 		}
