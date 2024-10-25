@@ -72,6 +72,9 @@ private:
 	UPROPERTY(VisibleDefaultsOnly, Category = "Range")
 	float ShootRange;
 
+	UPROPERTY(VisibleDefaultsOnly, Category = "CameraShake")
+	TSubclassOf<UCameraShake> ShakeClass;
+
 private:
 	ACharacter* OwnerCharacter;
 

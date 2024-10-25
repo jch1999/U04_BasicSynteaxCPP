@@ -25,6 +25,8 @@ ACAR4::ACAR4()
 
 	MontagePlayRate = 1.75f;
 	ShootRange = 10000.0f;
+
+	CHelpers::GetClass(&ShakeClass, "/Game/AR4/Shke_Fire");
 }
 
 //ACAR4* ACAR4::Spawn(ACharacter* InOwner)
@@ -89,7 +91,7 @@ void ACAR4::Tick(float DeltaTime)
 		QueryParams
 	))
 	{
-		// ì‹œë®¬ë ˆì´íŠ¸ í”¼ì§ìŠ¤ì¸ ê²½ìš°ë§Œ 
+		// ?œë??ˆì´???¼ì§?¤ì¸ ê²½ìš°ë§?
 		if (Hit.GetComponent()->IsSimulatingPhysics())
 		{
 			OwnerInterface->OnTarget();
@@ -175,6 +177,14 @@ void ACAR4::OffFire()
 
 void ACAR4::Firing_Internal()
 {
+	// Camera Shake
+	if (!OwnerCharacter) return;
+	APlayerController* pc = OwnerCharacter->GetController<APlayerController>();
+	if (pc)
+	{
+		pc->PlayerCameraManager->PlayCameraShake(ShakeClass);
+	}
+	// LineTrace for Visibility
 	ICWeaponInterface* OwnerInterface = Cast<ICWeaponInterface>(OwnerCharacter);
 	if (!OwnerInterface)return;
 
@@ -199,7 +209,7 @@ void ACAR4::Firing_Internal()
 		UPrimitiveComponent* HitComp = Hit.GetComponent();
 		if (HitComp->IsSimulatingPhysics())
 		{
-			// íž˜ = ë°©í–¥(í”Œë ˆì´ì–´ - ì¶©ëŒ ì•¡í„°) * í¬ê¸°
+			// Èû = ¹æÇâ(ÇÃ·¹ÀÌ¾î - Ãæµ¹ ¾×ÅÍ) * Å©±â
 			Direction = Hit.GetActor()->GetActorLocation() - OwnerCharacter->GetActorLocation();
 			Direction.Normalize();
 			HitComp->AddImpulseAtLocation(Direction * 3000.0f, OwnerCharacter->GetActorLocation());

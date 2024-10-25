@@ -43,4 +43,9 @@ public:
 		}
 	}
 
+	template<typename T>
+	static void CreateActorComponent(AActor* InObject, T** OutComp, FName InName)
+	{
+		(*OutComp) = InObject->CreateDefaultSubobject<T>(InName);
+	}
 };
