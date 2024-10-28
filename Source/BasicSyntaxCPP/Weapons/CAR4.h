@@ -6,6 +6,8 @@
 
 class UAnimMontage;
 class ACharacter;
+class ACBullet;
+class USoundCue;
 
 UCLASS()
 class BASICSYNTAXCPP_API ACAR4 : public AActor
@@ -28,8 +30,12 @@ public:
 	FORCEINLINE bool IsEquipped() { return bEquipped; }
 	FORCEINLINE bool IsPlayingMontage() { return bPlayingMontage; }
 	FORCEINLINE bool IsAiming() { return bAiming; }
+	FORCEINLINE bool IsFiring() { return bFiring; }
+	FORCEINLINE bool IsAutoFiring() { return bAutoFiring; }
 	FORCEINLINE USkeletalMeshComponent* GetMesh() { return MeshComp; }
 	FORCEINLINE float GetShootRange() { return ShootRange; }
+
+	void ToggleAutoFiring();
 
 	void EnableAim();
 	void DisableAim();
@@ -75,6 +81,24 @@ private:
 	UPROPERTY(VisibleDefaultsOnly, Category = "CameraShake")
 	TSubclassOf<UCameraShake> ShakeClass;
 
+	UPROPERTY(VisibleDefaultsOnly, Category = "Bullet")
+	TSubclassOf<ACBullet> BulletClass;
+
+	UPROPERTY(VisibleDefaultsOnly, Category = "Effect")
+	UParticleSystem* MuzzleEffect;
+
+	UPROPERTY(VisibleDefaultsOnly, Category = "Effect")
+	UParticleSystem* EjectEffect;
+
+	UPROPERTY(VisibleDefaultsOnly, Category = "Effect")
+	UParticleSystem* ImpactEffect;
+
+	UPROPERTY(VisibleDefaultsOnly, Category = "Effect")
+	USoundCue* FireSound;
+
+	UPROPERTY(VisibleDefaultsOnly, Category = "Effect")
+	UMaterial* DecalMaterial;
+
 private:
 	ACharacter* OwnerCharacter;
 
@@ -82,4 +106,7 @@ private:
 	bool bPlayingMontage;
 	bool bAiming;
 	bool bFiring;
+	bool bAutoFiring;
+
+	FTimerHandle AutoFireTimer;
 };

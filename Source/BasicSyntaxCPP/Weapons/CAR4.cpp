@@ -3,7 +3,11 @@
 #include "GameFramework/Character.h"
 #include "Components/SkeletalMeshComponent.h"
 #include "DrawDebugHelpers.h"
+#include "Components/DecalComponent.h"
+#include "Particles/ParticleSystem.h"
+#include "Sound/SoundCue.h"
 #include "CWeaponInterface.h"
+#include "CBullet.h"
 
 static TAutoConsoleVariable<bool> CVarDrawDebugLine(TEXT("IM.DrawDebug"), false, TEXT("Visible AR4 aim line"), ECVF_Cheat);
 
@@ -20,13 +24,20 @@ ACAR4::ACAR4()
 	CHelpers::GetAsset(&EquipMontage, "/Game/Character/Animations/AR4/Rifle_Grab_Montage");
 	CHelpers::GetAsset(&UnequipMontage, "/Game/Character/Animations/AR4/Rifle_Ungrab_Montage");
 
+	CHelpers::GetClass(&ShakeClass, "/Game/AR4/Shke_Fire");
+	CHelpers::GetClass(&BulletClass, "/Game/AR4/BP_CBullet");
+
+	CHelpers::GetAsset(&MuzzleEffect, "/Game/Particles_Rifle/Particles/VFX_Muzzleflash");
+	CHelpers::GetAsset(&EjectEffect, "/Game/Particles_Rifle/Particles/VFX_Eject_bullet");
+	CHelpers::GetAsset(&ImpactEffect, "/Game/Particles_Rifle/Particles/VFX_Impact_Default");
+	CHelpers::GetAsset(&FireSound, "/Game/Sounds/S_RifleShoot_Cue");
+	CHelpers::GetAsset(&DecalMaterial, "/Game/Materials/M_Decal");
+
 	HolsterSocket = "Holster_AR4";
 	HandSocket = "Hand_AR4";
 
 	MontagePlayRate = 1.75f;
 	ShootRange = 10000.0f;
-
-	CHelpers::GetClass(&ShakeClass, "/Game/AR4/Shke_Fire");
 }
 
 //ACAR4* ACAR4::Spawn(ACharacter* InOwner)
@@ -101,6 +112,11 @@ void ACAR4::Tick(float DeltaTime)
 	OwnerInterface->OffTarget();
 }
 
+void ACAR4::ToggleAutoFiring()
+{
+	bAutoFiring = !bAutoFiring;
+}
+
 void ACAR4::EnableAim() { bAiming = true; }
 
 void ACAR4::DisableAim() { bAiming = false; }
@@ -167,16 +183,37 @@ void ACAR4::OnFire()
 
 	bFiring = true;
 
+	if (bAutoFiring)
+	{
+		/*FTimerDelegate Delegate = FTimerDelegate::CreateUFunction(this, &ACAR4::Firing_Internal);
+		Delegate.BindUFunction(this, &ACAR4::Firing_Internal);*/
+
+		GetWorld()->GetTimerManager().SetTimer(AutoFireTimer, this, &ACAR4::Firing_Internal, 0.1f, true, 0.f);
+		return;
+	}
 	Firing_Internal();
 }
 
 void ACAR4::OffFire()
 {
 	bFiring = false;
+
+	if (bAutoFiring)
+	{
+		GetWorld()->GetTimerManager().ClearTimer(AutoFireTimer);
+	}
 }
 
 void ACAR4::Firing_Internal()
 {
+	// Get Aim Way
+
+	ICWeaponInterface* OwnerInterface = Cast<ICWeaponInterface>(OwnerCharacter);
+	if (!OwnerInterface)return;
+
+	FVector Start, End, Direction;
+	OwnerInterface->GetAimRay(Start, End, Direction);
+
 	// Camera Shake
 	if (!OwnerCharacter) return;
 	APlayerController* pc = OwnerCharacter->GetController<APlayerController>();
@@ -184,13 +221,27 @@ void ACAR4::Firing_Internal()
 	{
 		pc->PlayerCameraManager->PlayCameraShake(ShakeClass);
 	}
+
+	// Spawn Bullet
+	FVector MuzzleLocation = MeshComp->GetSocketLocation("b_gun_muzzleflash");
+		
+	if (BulletClass)
+	{
+		GetWorld()->SpawnActor<ACBullet>(BulletClass, MuzzleLocation, Direction.Rotation());
+	}
+
+	// PlayEffect
+	if (MuzzleEffect)
+	{
+		UGameplayStatics::SpawnEmitterAttached(MuzzleEffect, MeshComp, "MuzzleFlash");
+	}
+	if (EjectEffect)
+	{
+		UGameplayStatics::SpawnEmitterAttached(EjectEffect, MeshComp, "EjectBullet");
+	}
+	UGameplayStatics::PlaySoundAtLocation(GetWorld(), FireSound, MuzzleLocation);
+
 	// LineTrace for Visibility
-	ICWeaponInterface* OwnerInterface = Cast<ICWeaponInterface>(OwnerCharacter);
-	if (!OwnerInterface)return;
-
-	FVector Start, End, Direction;
-	OwnerInterface->GetAimRay(Start, End, Direction);
-
 	FCollisionQueryParams QueryParams;
 	QueryParams.AddIgnoredActor(this);
 	QueryParams.AddIgnoredActor(OwnerCharacter);
@@ -205,6 +256,14 @@ void ACAR4::Firing_Internal()
 		QueryParams
 	))
 	{
+		FRotator ImpactRotation = Hit.ImpactNormal.Rotation();
+		// Spawn Decal
+		UDecalComponent* DecalComp = UGameplayStatics::SpawnDecalAtLocation(GetWorld(), DecalMaterial, FVector(5), Hit.ImpactPoint, ImpactRotation, 6.0f);
+		DecalComp->SetFadeScreenSize(0);
+
+		// Play Impact
+		UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), ImpactEffect, Hit.ImpactPoint, ImpactRotation);
+
 		// Add Impulse to PhysicsBody
 		UPrimitiveComponent* HitComp = Hit.GetComponent();
 		if (HitComp->IsSimulatingPhysics())

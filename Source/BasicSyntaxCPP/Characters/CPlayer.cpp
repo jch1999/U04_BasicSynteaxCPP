@@ -111,6 +111,8 @@ void ACPlayer::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 
 	PlayerInputComponent->BindAction("Aim", IE_Pressed, this, &ACPlayer::OnAim);
 	PlayerInputComponent->BindAction("Aim", IE_Released, this, &ACPlayer::OffAim);
+
+	PlayerInputComponent->BindAction("AutoFire", IE_Pressed, this, &ACPlayer::OnAutoFire);
 }
 
 void ACPlayer::AddLaunch(float Height)
@@ -208,6 +210,13 @@ void ACPlayer::OffAim()
 	AR4->DisableAim();
 
 	ZoomOut();
+}
+
+void ACPlayer::OnAutoFire()
+{
+	if (AR4->IsFiring())return;
+
+	AR4->ToggleAutoFiring();
 }
 
 void ACPlayer::SetBodyColor(FLinearColor InBodyColor, FLinearColor InLogoColor)
