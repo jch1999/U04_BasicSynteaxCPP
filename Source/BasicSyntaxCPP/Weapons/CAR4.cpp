@@ -8,6 +8,7 @@
 #include "Sound/SoundCue.h"
 #include "CWeaponInterface.h"
 #include "CBullet.h"
+#include "Characters/CPlayer.h"
 
 static TAutoConsoleVariable<bool> CVarDrawDebugLine(TEXT("IM.DrawDebug"), false, TEXT("Visible AR4 aim line"), ECVF_Cheat);
 
@@ -42,6 +43,7 @@ ACAR4::ACAR4()
 
 	MaxBulletCnt = 30;
 	CurrentBulletCnt = MaxBulletCnt;
+	WeaponName = "AR4";
 }
 
 //ACAR4* ACAR4::Spawn(ACharacter* InOwner)
@@ -184,6 +186,16 @@ void ACAR4::Reload()
 	if (!bEquipped) return;
 	if (bReloading) return;
 
+	OffFire();
+	if (OwnerCharacter)
+	{
+		ICWeaponInterface* OwnerInterface = Cast<ICWeaponInterface>(OwnerCharacter);
+		if (OwnerInterface)
+		{
+			OwnerInterface->OffAim();
+		}
+	}
+	
 	bReloading = true;
 	OwnerCharacter->PlayAnimMontage(EquipMontage, MontagePlayRate);
 }

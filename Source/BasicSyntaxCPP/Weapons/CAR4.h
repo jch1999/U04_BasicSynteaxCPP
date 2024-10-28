@@ -6,6 +6,7 @@
 
 class UAnimMontage;
 class ACharacter;
+class ICWeaponInterface;
 class UStaticMesh;
 class ACBullet;
 class USoundCue;
@@ -36,6 +37,10 @@ public:
 	FORCEINLINE bool IsAutoFiring() { return bAutoFiring; }
 	FORCEINLINE USkeletalMeshComponent* GetMesh() { return MeshComp; }
 	FORCEINLINE float GetShootRange() { return ShootRange; }
+
+	FORCEINLINE FName GetWeaponName() { return WeaponName; }
+	FORCEINLINE int32 GetMaxBulletCnt() { return MaxBulletCnt; }
+	FORCEINLINE int32 GetCurBulletCnt() { return CurrentBulletCnt; }
 
 	void ToggleAutoFiring();
 
@@ -117,6 +122,7 @@ private:
 private:
 	ACharacter* OwnerCharacter;
 
+	FName WeaponName;
 	bool bEquipped;
 	bool bPlayingMontage;
 	bool bAiming;

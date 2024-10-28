@@ -10,6 +10,7 @@ class UCameraComponent;
 class UMaterialInstanceDynamic;
 class ACAR4;
 class UCAimWidget;
+class UCWeaponWidget;
 
 UCLASS()
 class BASICSYNTAXCPP_API ACPlayer : public ACharacter,public ICWeaponInterface
@@ -33,6 +34,16 @@ public:
 	void OnTarget() override;
 	void OffTarget() override;
 
+	void OnFire() override;
+	void OffFire() override;
+
+	void OnAim() override;
+	void OffAim() override;
+
+	void OnReload() override;
+
+	void OnAutoFire() override;
+
 protected:
 	UFUNCTION(BlueprintImplementableEvent)
 	void ZoomIn();
@@ -51,15 +62,6 @@ private:
 	void OffSprint();
 
 	void OnRifle();
-	void OnReload();
-
-	void OnFire();
-	void OffFire();
-
-	void OnAim();
-	void OffAim();
-
-	void OnAutoFire();
 
 public:
 	UFUNCTION(BlueprintCallable)
@@ -85,6 +87,9 @@ protected:
 	UPROPERTY(EditDefaultsOnly, Category = "Widget")
 	TSubclassOf<UCAimWidget> AnimWidgetClass;
 
+	UPROPERTY(EditDefaultsOnly, Category = "Widget")
+	TSubclassOf<UCWeaponWidget> WeaponWidgetClass;
+
 private:
 	UMaterialInstanceDynamic* BodyMaterial;
 	UMaterialInstanceDynamic* LogoMaterial;
@@ -92,4 +97,5 @@ private:
 	ACAR4* AR4;
 
 	UCAimWidget* AimWidget;
+	UCWeaponWidget* WeaponWidget;
 };

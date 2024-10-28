@@ -22,4 +22,13 @@ public:
 
 	virtual void OnTarget() {};
 	virtual void OffTarget() {};
+
+	virtual void OnAim() {};
+	virtual void OffAim() {};
+
+	virtual void OnFire() {};
+	virtual void OffFire() {};
+
+	virtual void OnReload() {};
+	virtual void OnAutoFire() {};
 };

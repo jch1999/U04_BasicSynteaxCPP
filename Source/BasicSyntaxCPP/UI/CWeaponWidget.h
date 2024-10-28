@@ -12,4 +12,14 @@ class BASICSYNTAXCPP_API UCWeaponWidget : public UUserWidget
 public:
 	UFUNCTION(BlueprintImplementableEvent)
 	void ChangeParam(FName Name, int32 NowBulletCnt, int32 MaxBulletCnt);
+
+	UFUNCTION(BlueprintImplementableEvent)
+	void SetWeaponName(FName Name);
+
+
+	UFUNCTION(BlueprintImplementableEvent)
+	void SetCurBulletCnt(int32 NowBulletCnt);
+
+	UFUNCTION(BlueprintImplementableEvent)
+	void SetMaxBulletCnt(int32 MaxBulletCnt);
 };

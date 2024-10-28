@@ -7,6 +7,7 @@
 #include "Blueprint/UserWidget.h"
 #include "Weapons/CAR4.h"
 #include "UI/CAimWidget.h"
+#include "UI/CWeaponWidget.h"
 
 ACPlayer::ACPlayer()
 {
@@ -83,6 +84,14 @@ void ACPlayer::BeginPlay()
 	AimWidget = CreateWidget<UCAimWidget>(GetController<APlayerController>(), AnimWidgetClass);
 	AimWidget->AddToViewport();
 	AimWidget->SetVisibility(ESlateVisibility::Hidden);
+
+	// Weapon Widget
+	WeaponWidget = CreateWidget<UCWeaponWidget>(GetController<APlayerController>(), WeaponWidgetClass);
+	WeaponWidget->AddToViewport();
+	WeaponWidget->SetVisibility(ESlateVisibility::HitTestInvisible);
+	WeaponWidget->SetWeaponName(AR4->GetWeaponName());
+	WeaponWidget->SetMaxBulletCnt(AR4->GetMaxBulletCnt());
+	WeaponWidget->SetCurBulletCnt(AR4->GetCurBulletCnt());
 }
 
 void ACPlayer::Tick(float DeltaTime)
