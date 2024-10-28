@@ -19,7 +19,7 @@ ACAR4::ACAR4()
 	
 	CHelpers::GetAsset(&EquipMontage, "/Game/Character/Animations/AR4/Rifle_Grab_Montage");
 	CHelpers::GetAsset(&UnequipMontage, "/Game/Character/Animations/AR4/Rifle_Ungrab_Montage");
-
+	CHelpers::GetAsset(&ReloadMontage, "/Game/Character/Animations/AR4/Rifle_Jog_Reload_Montage");
 	HolsterSocket = "Holster_AR4";
 	HandSocket = "Hand_AR4";
 
@@ -27,6 +27,9 @@ ACAR4::ACAR4()
 	ShootRange = 10000.0f;
 
 	CHelpers::GetClass(&ShakeClass, "/Game/AR4/Shke_Fire");
+
+	MaxBulletCnt = 30;
+	CurrentBulletCnt = MaxBulletCnt;
 }
 
 //ACAR4* ACAR4::Spawn(ACharacter* InOwner)
@@ -91,7 +94,7 @@ void ACAR4::Tick(float DeltaTime)
 		QueryParams
 	))
 	{
-		// ?œë??ˆì´???¼ì§?¤ì¸ ê²½ìš°ë§?
+		// ½Ã¹Ä·¹ÀÌÆ® ÇÇÁ÷½ºÀÎ °æ¿ì¸¸
 		if (Hit.GetComponent()->IsSimulatingPhysics())
 		{
 			OwnerInterface->OnTarget();
@@ -108,7 +111,8 @@ void ACAR4::DisableAim() { bAiming = false; }
 void ACAR4::Equip()
 {
 	if (bEquipped) return;
-	if (bPlayingMontage)return;
+	if (bPlayingMontage) return;
+	if (bReloading) return;
 
 	bPlayingMontage = true;
 	OwnerCharacter->PlayAnimMontage(EquipMontage,MontagePlayRate);
@@ -135,6 +139,7 @@ void ACAR4::Unequip()
 {
 	if (!bEquipped) return;
 	if (bPlayingMontage)return;
+	if (bReloading)return;
 
 	bPlayingMontage = true;
 	OwnerCharacter->PlayAnimMontage(UnequipMontage,MontagePlayRate);
@@ -157,12 +162,35 @@ void ACAR4::End_Unequip()
 	bPlayingMontage = false;
 }
 
+void ACAR4::Reload()
+{
+	if (!bEquipped) return;
+	if (bReloading) return;
+
+	bReloading = true;
+	OwnerCharacter->PlayAnimMontage(EquipMontage, MontagePlayRate);
+}
+
+void ACAR4::Begin_Reload()
+{
+	MeshComp->HideBoneByName("b_gun_mag",EPhysBodyOp::PBO_Term);
+}
+
+void ACAR4::End_Reload()
+{
+	MeshComp->UnHideBoneByName("b_gun_mag");
+	CurrentBulletCnt = MaxBulletCnt;
+
+	bReloading = false;
+}
+
 void ACAR4::OnFire()
 {
 	if (!bEquipped)return;
 	if (bPlayingMontage)return;
 	
 	if (!bAiming) return;
+	if (bReloading) return;
 	if (bFiring)return;
 
 	bFiring = true;
@@ -214,5 +242,11 @@ void ACAR4::Firing_Internal()
 			Direction.Normalize();
 			HitComp->AddImpulseAtLocation(Direction * 3000.0f, OwnerCharacter->GetActorLocation());
 		}
+	}
+
+	--CurrentBulletCnt;
+	if (CurrentBulletCnt < 1)
+	{
+		Reload();
 	}
 }

@@ -51,6 +51,7 @@ private:
 	void OffSprint();
 
 	void OnRifle();
+	void OnReload();
 
 	void OnFire();
 	void OffFire();

@@ -105,6 +105,7 @@ void ACPlayer::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 	PlayerInputComponent->BindAction("Sprint", IE_Released, this, &ACPlayer::OffSprint);
 
 	PlayerInputComponent->BindAction("Rifle", IE_Pressed, this, &ACPlayer::OnRifle);
+	PlayerInputComponent->BindAction("Reload", IE_Pressed, this, &ACPlayer::OnReload);
 
 	PlayerInputComponent->BindAction("Action", IE_Pressed, this, &ACPlayer::OnFire);
 	PlayerInputComponent->BindAction("Action", IE_Released, this, &ACPlayer::OffFire);
@@ -164,6 +165,14 @@ void ACPlayer::OnRifle()
 	}
 
 	AR4->Equip();
+}
+
+void ACPlayer::OnReload()
+{
+	if (AR4->IsEquipped())
+	{
+		AR4->Reload();
+	}
 }
 
 void ACPlayer::OnFire()

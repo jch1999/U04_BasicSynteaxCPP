@@ -6,6 +6,7 @@
 
 class UAnimMontage;
 class ACharacter;
+class UStaticMesh;
 
 UCLASS()
 class BASICSYNTAXCPP_API ACAR4 : public AActor
@@ -28,6 +29,7 @@ public:
 	FORCEINLINE bool IsEquipped() { return bEquipped; }
 	FORCEINLINE bool IsPlayingMontage() { return bPlayingMontage; }
 	FORCEINLINE bool IsAiming() { return bAiming; }
+	FORCEINLINE bool IsReloading() { return bReloading; }
 	FORCEINLINE USkeletalMeshComponent* GetMesh() { return MeshComp; }
 	FORCEINLINE float GetShootRange() { return ShootRange; }
 
@@ -40,6 +42,10 @@ public:
 	void Unequip();
 	void Begin_Unequip();
 	void End_Unequip();
+
+	void Reload();
+	void Begin_Reload();
+	void End_Reload();
 
 	void OnFire();
 	void OffFire();
@@ -67,10 +73,19 @@ private:
 	UAnimMontage* UnequipMontage;
 
 	UPROPERTY(VisibleDefaultsOnly, Category = "Montage")
+	UAnimMontage* ReloadMontage;
+
+	UPROPERTY(VisibleDefaultsOnly, Category = "Montage")
 	float MontagePlayRate;
 
 	UPROPERTY(VisibleDefaultsOnly, Category = "Range")
 	float ShootRange;
+
+	UPROPERTY(VisibleDefaultsOnly, Category = "Bullet")
+	int32 MaxBulletCnt;
+
+	UPROPERTY(VisibleDefaultsOnly, Category = "Bullet")
+	int32 CurrentBulletCnt;
 
 	UPROPERTY(VisibleDefaultsOnly, Category = "CameraShake")
 	TSubclassOf<UCameraShake> ShakeClass;
@@ -82,4 +97,5 @@ private:
 	bool bPlayingMontage;
 	bool bAiming;
 	bool bFiring;
+	bool bReloading;
 };
