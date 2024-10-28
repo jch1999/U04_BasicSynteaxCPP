@@ -59,6 +59,8 @@ private:
 	void OnAim();
 	void OffAim();
 
+	void OnAutoFire();
+
 public:
 	UFUNCTION(BlueprintCallable)
 	void SetBodyColor(FLinearColor InBodyColor, FLinearColor InLogoColor);

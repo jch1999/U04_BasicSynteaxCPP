@@ -17,6 +17,8 @@ ACBullet::ACBullet()
 	CHelpers::GetAsset(&MaterialAsset, "/Game/StaticMeshs/M_Emissive");
 	MeshComp->SetMaterial(0, MaterialAsset);
 	MeshComp->SetCollisionProfileName("NoCollision");
+	// byte타입을 bool 처럼 사용
+	MeshComp->CastShadow = false;
 
 	MoveComp->InitialSpeed = 20000.0f;
 	MoveComp->MaxSpeed = 20000.0f;
