@@ -10,6 +10,7 @@ class UCameraComponent;
 class UMaterialInstanceDynamic;
 class ACAR4;
 class UCAimWidget;
+class UCGameInfoWidget;
 
 UCLASS()
 class BASICSYNTAXCPP_API ACPlayer : public ACharacter,public ICWeaponInterface
@@ -82,7 +83,10 @@ protected:
 	TSubclassOf<ACAR4> WeaponClass;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Widget")
-	TSubclassOf<UCAimWidget> AnimWidgetClass;
+	TSubclassOf<UCAimWidget> AimWidgetClass;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Widget")
+	TSubclassOf<UCGameInfoWidget> GameInfoWidgetClass;
 
 private:
 	UMaterialInstanceDynamic* BodyMaterial;
@@ -91,4 +95,5 @@ private:
 	ACAR4* AR4;
 
 	UCAimWidget* AimWidget;
+	UCGameInfoWidget* GameInfoWidget;
 };

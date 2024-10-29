@@ -38,6 +38,7 @@ ACAR4::ACAR4()
 
 	MontagePlayRate = 1.75f;
 	ShootRange = 10000.0f;
+	PitchSpeed = 0.25f;
 }
 
 //ACAR4* ACAR4::Spawn(ACharacter* InOwner)
@@ -151,6 +152,7 @@ void ACAR4::Unequip()
 {
 	if (!bEquipped) return;
 	if (bPlayingMontage)return;
+	if (bFiring) return;
 
 	bPlayingMontage = true;
 	OwnerCharacter->PlayAnimMontage(UnequipMontage,MontagePlayRate);
@@ -182,6 +184,8 @@ void ACAR4::OnFire()
 	if (bFiring)return;
 
 	bFiring = true;
+
+	CurrentPitch = 0.0f;
 
 	if (bAutoFiring)
 	{
@@ -245,6 +249,15 @@ void ACAR4::Firing_Internal()
 	FCollisionQueryParams QueryParams;
 	QueryParams.AddIgnoredActor(this);
 	QueryParams.AddIgnoredActor(OwnerCharacter);
+
+	// Increase Pitch
+	CurrentPitch -= PitchSpeed * GetWorld()->GetDeltaSeconds();
+	if (CurrentPitch > -PitchSpeed)
+	{
+		// OwnerCharacter->GetController()->SetControlRotation
+		OwnerCharacter->AddControllerPitchInput(CurrentPitch);
+		CLog::Print(CurrentPitch, 1);
+	}
 
 	FHitResult Hit;
 	if (GetWorld()->LineTraceSingleByChannel

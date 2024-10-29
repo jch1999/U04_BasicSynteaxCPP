@@ -10,7 +10,7 @@ public class BasicSyntaxCPP : ModuleRules
 
 		PrivateIncludePaths.Add(ModuleDirectory);
 
-		PublicDependencyModuleNames.AddRange(new string[] { "Core", "CoreUObject", "Engine", "InputCore" });
+		PublicDependencyModuleNames.AddRange(new string[] { "Core", "CoreUObject", "Engine", "InputCore", "SlateCore" });
 
 		PrivateDependencyModuleNames.AddRange(new string[] {  });
 

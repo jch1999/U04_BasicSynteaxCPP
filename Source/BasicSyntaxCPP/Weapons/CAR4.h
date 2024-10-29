@@ -98,7 +98,9 @@ private:
 
 	UPROPERTY(VisibleDefaultsOnly, Category = "Effect")
 	UMaterial* DecalMaterial;
-
+	
+	UPROPERTY(VisibleDefaultsOnly, Category = "Effect")
+	float PitchSpeed;
 private:
 	ACharacter* OwnerCharacter;
 
@@ -109,4 +111,6 @@ private:
 	bool bAutoFiring;
 
 	FTimerHandle AutoFireTimer;
+
+	float CurrentPitch;
 };
