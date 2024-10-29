@@ -8,7 +8,9 @@
 #include "Sound/SoundCue.h"
 #include "CWeaponInterface.h"
 #include "CBullet.h"
+#include "CMagazine.h"
 #include "Characters/CPlayer.h"
+#include "UI/CWeaponWidget.h"
 
 static TAutoConsoleVariable<bool> CVarDrawDebugLine(TEXT("IM.DrawDebug"), false, TEXT("Visible AR4 aim line"), ECVF_Cheat);
 
@@ -28,13 +30,13 @@ ACAR4::ACAR4()
 
 	CHelpers::GetClass(&ShakeClass, "/Game/AR4/Shke_Fire");
 	CHelpers::GetClass(&BulletClass, "/Game/AR4/BP_CBullet");
-
+	//CHelpers::GetClass(&MagazineClass, "/Game/");
 	CHelpers::GetAsset(&MuzzleEffect, "/Game/Particles_Rifle/Particles/VFX_Muzzleflash");
 	CHelpers::GetAsset(&EjectEffect, "/Game/Particles_Rifle/Particles/VFX_Eject_bullet");
 	CHelpers::GetAsset(&ImpactEffect, "/Game/Particles_Rifle/Particles/VFX_Impact_Default");
 	CHelpers::GetAsset(&FireSound, "/Game/Sounds/S_RifleShoot_Cue");
 	CHelpers::GetAsset(&DecalMaterial, "/Game/Materials/M_Decal");
-
+	
 	HolsterSocket = "Holster_AR4";
 	HandSocket = "Hand_AR4";
 
@@ -197,12 +199,19 @@ void ACAR4::Reload()
 	}
 	
 	bReloading = true;
-	OwnerCharacter->PlayAnimMontage(EquipMontage, MontagePlayRate);
+	OwnerCharacter->PlayAnimMontage(ReloadMontage, MontagePlayRate);
 }
 
 void ACAR4::Begin_Reload()
 {
-	MeshComp->HideBoneByName("b_gun_mag",EPhysBodyOp::PBO_Term);
+	MeshComp->HideBoneByName("b_gun_mag", EPhysBodyOp::PBO_Term);
+
+	FVector MagazineLocation = MeshComp->GetBoneLocation("b_gun_mag");
+	FRotator MagazineRotator = MeshComp->GetBoneQuaternion("b_gun_mag").Rotator();
+	ACMagazine* Magazine= GetWorld()->SpawnActor<ACMagazine>(MagazineClass, MagazineLocation, MagazineRotator);
+	Magazine->SetLifeSpan(5.0f);
+	Magazine->GetMesh()->SetSimulatePhysics(true);
+
 }
 
 void ACAR4::End_Reload()
@@ -317,6 +326,11 @@ void ACAR4::Firing_Internal()
 	}
 
 	--CurrentBulletCnt;
+	ACPlayer* Player = Cast<ACPlayer>(OwnerCharacter);
+	if (Player)
+	{
+		Player->GetWeaponWidget()->SetCurBulletCnt(GetCurBulletCnt());
+	}
 	if (CurrentBulletCnt < 1)
 	{
 		Reload();

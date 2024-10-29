@@ -22,4 +22,11 @@ public:
 
 	UFUNCTION(BlueprintImplementableEvent)
 	void SetMaxBulletCnt(int32 MaxBulletCnt);
+
+
+	UFUNCTION(BlueprintImplementableEvent)
+	void ActiveAutoFire();
+
+	UFUNCTION(BlueprintImplementableEvent)
+	void DeactiveAutoFire();
 };

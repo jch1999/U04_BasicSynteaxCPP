@@ -43,6 +43,7 @@ public:
 	void OnReload() override;
 
 	void OnAutoFire() override;
+	UCWeaponWidget* GetWeaponWidget();
 
 protected:
 	UFUNCTION(BlueprintImplementableEvent)

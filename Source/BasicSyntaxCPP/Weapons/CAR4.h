@@ -119,6 +119,8 @@ private:
 	UPROPERTY(VisibleDefaultsOnly, Category = "Effect")
 	UMaterial* DecalMaterial;
 
+	UPROPERTY(VisibleDefaultsOnly, Category = "Magazine")
+	TSubclassOf<ACBullet> MagazineClass;
 private:
 	ACharacter* OwnerCharacter;
 

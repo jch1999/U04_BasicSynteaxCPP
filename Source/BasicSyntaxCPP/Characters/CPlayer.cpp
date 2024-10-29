@@ -59,6 +59,9 @@ ACPlayer::ACPlayer()
 
 	// Get Aim Widget Class Asset
 	CHelpers::GetClass(&AnimWidgetClass, "/Game/UI/WB_Aim");
+
+	// Get Weapon Widget Class Asset
+	CHelpers::GetClass(&WeaponWidgetClass, "/Game/UI/WB_WeaponUI");
 }
 
 void ACPlayer::BeginPlay()
@@ -97,7 +100,17 @@ void ACPlayer::BeginPlay()
 void ACPlayer::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-
+	if (WeaponWidget)
+	{
+		if (AR4->IsAutoFiring())
+		{
+			WeaponWidget->ActiveAutoFire();
+		}
+		else
+		{
+			WeaponWidget->DeactiveAutoFire();
+		}
+	}
 }
 
 void ACPlayer::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
@@ -235,6 +248,11 @@ void ACPlayer::OnAutoFire()
 	if (AR4->IsFiring())return;
 
 	AR4->ToggleAutoFiring();
+}
+
+UCWeaponWidget* ACPlayer::GetWeaponWidget()
+{
+	return WeaponWidget;
 }
 
 void ACPlayer::SetBodyColor(FLinearColor InBodyColor, FLinearColor InLogoColor)
