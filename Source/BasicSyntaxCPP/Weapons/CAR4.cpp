@@ -251,13 +251,13 @@ void ACAR4::Firing_Internal()
 	QueryParams.AddIgnoredActor(OwnerCharacter);
 
 	// Increase Pitch
-	CurrentPitch -= PitchSpeed * GetWorld()->GetDeltaSeconds();
 	if (CurrentPitch > -PitchSpeed)
 	{
-		// OwnerCharacter->GetController()->SetControlRotation
-		OwnerCharacter->AddControllerPitchInput(CurrentPitch);
-		CLog::Print(CurrentPitch, 1);
+		CurrentPitch -= PitchSpeed * GetWorld()->GetDeltaSeconds();
 	}
+	// OwnerCharacter->GetController()->SetControlRotation
+	OwnerCharacter->AddControllerPitchInput(CurrentPitch);
+	CLog::Print(CurrentPitch, 1);
 
 	FHitResult Hit;
 	if (GetWorld()->LineTraceSingleByChannel
