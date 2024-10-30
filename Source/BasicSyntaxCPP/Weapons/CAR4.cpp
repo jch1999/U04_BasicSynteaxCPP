@@ -1,6 +1,7 @@
 #include "CAR4.h"
 #include "BasicSyntaxCPP.h"
 #include "GameFramework/Character.h"
+#include "GameFramework/CharacterMovementComponent.h"
 #include "Components/SkeletalMeshComponent.h"
 #include "DrawDebugHelpers.h"
 #include "Components/DecalComponent.h"
@@ -141,6 +142,9 @@ void ACAR4::Begin_Equip()
 		FAttachmentTransformRules(EAttachmentRule::KeepRelative, true),
 		HandSocket
 	);
+
+	OwnerCharacter->bUseControllerRotationYaw = true;
+	OwnerCharacter->GetCharacterMovement()->bOrientRotationToMovement = false;
 }
 
 void ACAR4::End_Equip()
@@ -152,7 +156,12 @@ void ACAR4::Unequip()
 {
 	if (!bEquipped) return;
 	if (bPlayingMontage)return;
-	if (bFiring) return;
+	//if (bFiring) return;
+
+	if (bFiring && bAutoFiring)
+	{
+		OffFire();
+	}
 
 	bPlayingMontage = true;
 	OwnerCharacter->PlayAnimMontage(UnequipMontage,MontagePlayRate);
@@ -173,6 +182,9 @@ void ACAR4::Begin_Unequip()
 void ACAR4::End_Unequip()
 {
 	bPlayingMontage = false;
+
+	OwnerCharacter->bUseControllerRotationYaw = false;
+	OwnerCharacter->GetCharacterMovement()->bOrientRotationToMovement = true;
 }
 
 void ACAR4::OnFire()
@@ -180,7 +192,7 @@ void ACAR4::OnFire()
 	if (!bEquipped)return;
 	if (bPlayingMontage)return;
 	
-	if (!bAiming) return;
+	//if (!bAiming) return;
 	if (bFiring)return;
 
 	bFiring = true;
