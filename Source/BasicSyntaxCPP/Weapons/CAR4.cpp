@@ -30,7 +30,7 @@ ACAR4::ACAR4()
 
 	CHelpers::GetClass(&ShakeClass, "/Game/AR4/Shke_Fire");
 	CHelpers::GetClass(&BulletClass, "/Game/AR4/BP_CBullet");
-	//CHelpers::GetClass(&MagazineClass, "/Game/");
+	CHelpers::GetClass(&MagazineClass, "/Game/AR4/BP_CAR4_Magazine");
 	CHelpers::GetAsset(&MuzzleEffect, "/Game/Particles_Rifle/Particles/VFX_Muzzleflash");
 	CHelpers::GetAsset(&EjectEffect, "/Game/Particles_Rifle/Particles/VFX_Eject_bullet");
 	CHelpers::GetAsset(&ImpactEffect, "/Game/Particles_Rifle/Particles/VFX_Impact_Default");
@@ -39,6 +39,7 @@ ACAR4::ACAR4()
 	
 	HolsterSocket = "Holster_AR4";
 	HandSocket = "Hand_AR4";
+	MagazineHandSocket = "MagazineSocket";
 
 	MontagePlayRate = 1.75f;
 	ShootRange = 10000.0f;
@@ -74,6 +75,7 @@ void ACAR4::BeginPlay()
 			FAttachmentTransformRules(EAttachmentRule::KeepRelative, true),
 			HolsterSocket
 		);
+		//SpawnMagazine2();
 	}
 }
 
@@ -161,6 +163,7 @@ void ACAR4::Unequip()
 	if (!bEquipped) return;
 	if (bPlayingMontage)return;
 	if (bReloading)return;
+	if (bFiring)return;
 
 	bPlayingMontage = true;
 	OwnerCharacter->PlayAnimMontage(UnequipMontage,MontagePlayRate);
@@ -200,26 +203,53 @@ void ACAR4::Reload()
 	
 	bReloading = true;
 	OwnerCharacter->PlayAnimMontage(ReloadMontage, MontagePlayRate);
+
+	if (!MagazineEmpty)
+	{
+		SpawnMagazine();
+	}
 }
 
 void ACAR4::Begin_Reload()
 {
 	MeshComp->HideBoneByName("b_gun_mag", EPhysBodyOp::PBO_Term);
 
-	FVector MagazineLocation = MeshComp->GetBoneLocation("b_gun_mag");
-	FRotator MagazineRotator = MeshComp->GetBoneQuaternion("b_gun_mag").Rotator();
-	ACMagazine* Magazine= GetWorld()->SpawnActor<ACMagazine>(MagazineClass, MagazineLocation, MagazineRotator);
-	Magazine->SetLifeSpan(5.0f);
-	Magazine->GetMesh()->SetSimulatePhysics(true);
+	// Drop Empty Magazine
+	MagazineEmpty->Activation();
+	MagazineEmpty->AttachToComponent
+	(
+		OwnerCharacter->GetMesh(),
+		FAttachmentTransformRules(EAttachmentRule::KeepRelative, false),
+		MagazineHandSocket
+	);
+	MagazineEmpty->GetMesh()->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
+	MagazineEmpty->GetMesh()->SetSimulatePhysics(true);
 
+	CLog::Print(MagazineFull->GetActorLocation());
+	// Delay
+	GetWorld()->GetTimerManager().SetTimer(MagazineFullActiveTimer, MagazineFull, &ACMagazine::Activation, 0.1f, false, 0.54f*(1.0f/MontagePlayRate));
 }
 
 void ACAR4::End_Reload()
 {
 	MeshComp->UnHideBoneByName("b_gun_mag");
 	CurrentBulletCnt = MaxBulletCnt;
+	
+	MagazineEmpty->GetMesh()->SetSimulatePhysics(false);
+	MagazineEmpty->Deactivation();
+	MagazineEmpty->SetActorRelativeLocation(FVector(0.0f));
+	MagazineEmpty->SetActorRelativeRotation(FRotator(0.0f));
 
+	MagazineFull->Deactivation();
 	bReloading = false;
+	
+	GetWorld()->GetTimerManager().ClearTimer(MagazineFullActiveTimer);
+
+	ACPlayer* Player = Cast<ACPlayer>(OwnerCharacter);
+	if (Player)
+	{
+		Player->GetWeaponWidget()->SetCurBulletCnt(GetCurBulletCnt());
+	}
 }
 
 void ACAR4::OnFire()
@@ -334,5 +364,35 @@ void ACAR4::Firing_Internal()
 	if (CurrentBulletCnt < 1)
 	{
 		Reload();
+	}
+}
+
+void ACAR4::SpawnMagazine()
+{
+	if (MagazineClass)
+	{
+		FVector MagazineaHandLocation = OwnerCharacter->GetMesh()->GetBoneLocation(MagazineHandSocket);
+		FRotator MagazineHandRotator = OwnerCharacter->GetMesh()->GetBoneQuaternion(MagazineHandSocket).Rotator();
+
+		MagazineEmpty = GetWorld()->SpawnActor<ACMagazine>(MagazineClass, MagazineaHandLocation, MagazineHandRotator);
+		MagazineEmpty->AttachToComponent
+		(
+			OwnerCharacter->GetMesh(),
+			FAttachmentTransformRules(EAttachmentRule::KeepRelative, true),
+			MagazineHandSocket
+		);
+		MagazineEmpty->GetMesh()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+		MagazineEmpty->Deactivation();
+
+		
+		MagazineFull = GetWorld()->SpawnActor<ACMagazine>(MagazineClass, MagazineaHandLocation, MagazineHandRotator);
+		MagazineFull->AttachToComponent
+		(
+			OwnerCharacter->GetMesh(),
+			FAttachmentTransformRules(EAttachmentRule::KeepRelative, true),
+			MagazineHandSocket
+		);
+		MagazineFull->GetMesh()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+		MagazineFull->Deactivation();
 	}
 }

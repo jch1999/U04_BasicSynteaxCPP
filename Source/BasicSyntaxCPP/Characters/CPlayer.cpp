@@ -100,17 +100,6 @@ void ACPlayer::BeginPlay()
 void ACPlayer::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-	if (WeaponWidget)
-	{
-		if (AR4->IsAutoFiring())
-		{
-			WeaponWidget->ActiveAutoFire();
-		}
-		else
-		{
-			WeaponWidget->DeactiveAutoFire();
-		}
-	}
 }
 
 void ACPlayer::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
@@ -197,6 +186,7 @@ void ACPlayer::OnReload()
 	{
 		AR4->Reload();
 	}
+
 }
 
 void ACPlayer::OnFire()
@@ -248,6 +238,18 @@ void ACPlayer::OnAutoFire()
 	if (AR4->IsFiring())return;
 
 	AR4->ToggleAutoFiring();
+
+	if (WeaponWidget)
+	{
+		if (AR4->IsAutoFiring())
+		{
+			WeaponWidget->ActiveAutoFire();
+		}
+		else
+		{
+			WeaponWidget->DeactiveAutoFire();
+		}
+	}
 }
 
 UCWeaponWidget* ACPlayer::GetWeaponWidget()

@@ -9,6 +9,7 @@ class ACharacter;
 class ICWeaponInterface;
 class UStaticMesh;
 class ACBullet;
+class ACMagazine;
 class USoundCue;
 
 UCLASS()
@@ -66,6 +67,8 @@ private:
 	UFUNCTION()
 	void Firing_Internal();
 
+	void SpawnMagazine();
+
 protected:
 	UPROPERTY(BlueprintReadOnly, VisibleDefaultsOnly, Category = "Components")
 	USkeletalMeshComponent* MeshComp;
@@ -76,6 +79,9 @@ private:
 
 	UPROPERTY(EditDefaultsOnly, Category = "Socket")
 	FName HandSocket;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Socket")
+	FName MagazineHandSocket;
 
 	UPROPERTY(VisibleDefaultsOnly, Category = "Montage")
 	UAnimMontage* EquipMontage;
@@ -120,7 +126,7 @@ private:
 	UMaterial* DecalMaterial;
 
 	UPROPERTY(VisibleDefaultsOnly, Category = "Magazine")
-	TSubclassOf<ACBullet> MagazineClass;
+	TSubclassOf<ACMagazine> MagazineClass;
 private:
 	ACharacter* OwnerCharacter;
 
@@ -132,5 +138,8 @@ private:
 	bool bReloading;
 	bool bAutoFiring;
 
+	ACMagazine* MagazineEmpty;
+	ACMagazine* MagazineFull;
 	FTimerHandle AutoFireTimer;
+	FTimerHandle MagazineFullActiveTimer;
 };

@@ -15,6 +15,10 @@ public:
 protected:
 	virtual void BeginPlay() override;
 
+public:
+	void Activation();
+	void Deactivation();
+
 protected:
 	UPROPERTY(BlueprintReadOnly, VisibleDefaultsOnly, Category = "Components")
 	UStaticMeshComponent* MeshComp;
